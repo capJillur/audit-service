@@ -4,7 +4,7 @@
   "description": "Production-grade URL audit service — validation, timeouts, concurrency limits, caching, rate limiting, and structured logging.",
   "main": "src/server.js",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.18.1"
   },
   "scripts": {
     "start": "node src/server.js",
