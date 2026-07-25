@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Page Pulse — URL Audit Service</title>
+<style>
+  :root{
+    --ink:#0e1b17;
+    --paper:#f3f5f1;
+    --panel:#ffffff;
+    --line:#d7ddd4;
+    --pulse:#1f8a5f;
+    --pulse-dim:#c9ead9;
+    --warn:#b3541e;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.5;
+  }
+  header{
+    padding:3rem 1.5rem 2rem;
+    max-width:760px;
+    margin:0 auto;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.75rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--pulse);
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+  }
+  .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--pulse);
+    box-shadow:0 0 0 4px var(--pulse-dim);
+    animation:beat 1.8s ease-in-out infinite;
+  }
+  @keyframes beat{0%,100%{transform:scale(1);}50%{transform:scale(1.35);}}
+  @media (prefers-reduced-motion: reduce){ .dot{animation:none;} }
+  h1{
+    font-size:2.4rem;
+    margin:.4rem 0 .5rem;
+    letter-spacing:-.02em;
+  }
+  .lede{color:#3c463f;max-width:56ch;}
+  main{max-width:760px;margin:0 auto;padding:0 1.5rem 3rem;}
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:1.5rem;
+    margin-bottom:1.5rem;
+  }
+  .panel h2{margin-top:0;font-size:1rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;color:#556155;}
+  form{display:flex;gap:.6rem;flex-wrap:wrap;}
+  input[type=url]{
+    flex:1 1 320px;
+    padding:.7rem .8rem;
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-family:var(--mono);
+    font-size:.9rem;
+  }
+  button{
+    background:var(--ink);
+    color:var(--paper);
+    border:0;
+    border-radius:6px;
+    padding:.7rem 1.2rem;
+    font-family:var(--mono);
+    font-size:.85rem;
+    cursor:pointer;
+  }
+  button:hover{background:var(--pulse);}
+  button:focus-visible, input:focus-visible{outline:2px solid var(--pulse);outline-offset:2px;}
+  button:disabled{opacity:.5;cursor:progress;}
+  pre{
+    background:#0e1b17;
+    color:#d9f2e4;
+    padding:1rem;
+    border-radius:8px;
+    overflow-x:auto;
+    font-family:var(--mono);
+    font-size:.82rem;
+    margin:0;
+  }
+  .endpoint{font-family:var(--mono);font-size:.85rem;background:#eef2ec;border-radius:6px;padding:.6rem .8rem;display:inline-block;}
+  .hint{font-size:.82rem;color:#5c675e;margin-top:.6rem;}
+  footer{
+    max-width:760px;
+    margin:0 auto;
+    padding:2rem 1.5rem 3rem;
+    font-family:var(--mono);
+    font-size:.78rem;
+    color:#5c675e;
+    border-top:1px solid var(--line);
+  }
+  footer a{color:var(--pulse);}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow"><span class="dot"></span> Page Pulse / diagnostic service</div>
+  <h1>Send a URL. Get a pulse.</h1>
+  <p class="lede">A production-grade audit service: status, timing, SEO signals, and resilience — checked against real thresholds, not vibes.</p>
+</header>
+<main>
+  <section class="panel">
+    <h2>Try it</h2>
+    <form id="auditForm">
+      <input type="url" id="urlInput" placeholder="https://example.com" required />
+      <button type="submit" id="submitBtn">Run audit</button>
+    </form>
+    <p class="hint">Requests are rate-limited per client and cached for repeat URLs within the configured window.</p>
+    <pre id="result">// results appear here</pre>
+  </section>
+
+  <section class="panel">
+    <h2>API contract</h2>
+    <p>POST <span class="endpoint">/api/audit</span> with a JSON body <code>{ "url": "https://example.com" }</code>.</p>
+    <p>Optional: <code>{ "cacheTtlSeconds": 60 }</code> to override the default cache window for that request.</p>
+    <p>See the README in the repo for the full response schema, error codes, and headers.</p>
+  </section>
+</main>
+<footer>
+  Built for Digital Heroes Training Task — <a href="https://digitalheroesco.com" target="_blank" rel="noopener">digitalheroesco.com</a>
+</footer>
+<script>
+  const form = document.getElementById('auditForm');
+  const result = document.getElementById('result');
+  const btn = document.getElementById('submitBtn');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const url = document.getElementById('urlInput').value;
+    btn.disabled = true;
+    btn.textContent = 'Auditing…';
+    result.textContent = 'Running…';
+    try {
+      const res = await fetch('/api/audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      const json = await res.json();
+      result.textContent = JSON.stringify(json, null, 2);
+    } catch (err) {
+      result.textContent = 'Request failed: ' + err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Run audit';
+    }
+  });
+</script>
+</body>
+</html>
