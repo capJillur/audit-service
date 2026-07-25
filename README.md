@@ -1,5 +1,8 @@
 # Page Pulse
 
+**Live URL:** 
+ https://audit-service-0e7e.onrender.com
+
 A production-grade URL audit service. Send it a URL; it returns status, timing,
 HTTPS, and lightweight SEO signals (title, meta description, headings, alt-text
 coverage, link counts) with a transparent 0–100 score and a list of concrete issues.
@@ -144,14 +147,11 @@ CI: `.github/workflows/ci.yml` runs `npm ci && npm run test:coverage` on Node
 
 ## Deployment
 
-Deployed on [Render](https://render.com) (free web service tier):
-1. Push this repo to GitHub.
-2. New → Web Service → connect the repo.
-3. Build command: `npm install`. Start command: `npm start`.
-4. Add the environment variables from `.env.example`.
-5. Deploy — Render assigns a public HTTPS URL.
+Deployed on Render
+
 
 **Live URL:** _add after deploying_
-
+ https://audit-service-0e7e.onrender.com
+ 
 ---
 Built for Digital Heroes Training Task — [digitalheroesco.com](https://digitalheroesco.com)
